@@ -3,5 +3,6 @@ uvicorn
 jinja2
 python-multipart
 python-dotenv
+pypdf
 pymupdf
 google-genai
