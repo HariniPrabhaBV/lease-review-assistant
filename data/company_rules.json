@@ -1,0 +1,15 @@
+{
+  "max_deposit_months": 3,
+  "notice_period_min": 30,
+  "notice_period_max": 60,
+
+  "required_clauses": [
+    "maintenance responsibility",
+    "deposit return timeline"
+  ],
+
+  "prohibited_terms": [
+    "non-refundable",
+    "terminate immediately"
+  ]
+}

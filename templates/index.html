@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lease Review Assistant</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #1e3a8a, #2563eb);
+            font-family: 'Segoe UI', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Floating Background Blobs */
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        .blob1 {
+            width: 300px;
+            height: 300px;
+            background: #60a5fa;
+            top: 50px;
+            left: 50px;
+        }
+
+        .blob2 {
+            width: 350px;
+            height: 350px;
+            background: #4f46e5;
+            bottom: 50px;
+            right: 50px;
+        }
+
+        /* Navbar */
+        .navbar {
+            z-index: 2;
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Main Container */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            padding-top: 40px;
+            padding-bottom: 60px;
+        }
+
+        /* Card Styling */
+        .upload-card {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            padding: 40px;
+        }
+
+        .main-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+        }
+
+        .sub-title {
+            color: #6b7280;
+        }
+
+        /* Feature Cards */
+        .feature-box {
+            border-radius: 18px;
+            padding: 20px;
+            color: white;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature1 {
+            background: linear-gradient(135deg, #2563eb, #60a5fa);
+        }
+
+        .feature2 {
+            background: linear-gradient(135deg, #9333ea, #c084fc);
+        }
+
+        .feature3 {
+            background: linear-gradient(135deg, #059669, #34d399);
+        }
+
+        /* Button Styling */
+        .btn-analyze {
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            border: none;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-analyze:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .disclaimer {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Background Blobs -->
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-dark bg-dark shadow-sm py-3 mb-4">
+        <div class="container">
+            <span class="navbar-brand fw-bold fs-5">⚖️ Lease Review Assistant</span>
+            <span class="badge bg-primary fs-6 px-3 py-2">PS05 Legal Operations</span>
+        </div>
+    </nav>
+
+    <div class="container main-container">
+        <div class="card upload-card">
+            <div class="text-center mb-4">
+                <h1 class="main-title text-primary">⚖️ Lease Review Assistant</h1>
+                <p class="sub-title fs-5">AI Powered Legal Compliance Review System</p>
+            </div>
+
+            <!-- Dynamic Error Alert from FastAPI (if redirected on invalid file) -->
+            {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                <strong>Error:</strong> {{ error }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
+            <!-- Feature Cards -->
+            <div class="row text-center mt-4 mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="feature-box feature1 shadow-sm">
+                        <h2 class="mb-1">📄</h2>
+                        <h6>Lease Analysis</h6>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="feature-box feature2 shadow-sm">
+                        <h2 class="mb-1">🤖</h2>
+                        <h6>AI Summary</h6>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="feature-box feature3 shadow-sm">
+                        <h2 class="mb-1">⚖️</h2>
+                        <h6>Compliance Check</h6>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Form with Validation and Loading State -->
+            <form id="uploadForm" action="/analyze" method="post" enctype="multipart/form-data">
+                <div class="mb-4 text-start">
+                    <label class="form-label fw-bold">Upload Lease Agreement (.txt, .pdf)</label>
+                    <input 
+                        type="file" 
+                        id="fileInput"
+                        name="file" 
+                        accept=".txt,.pdf" 
+                        required 
+                        class="form-control form-control-lg">
+                </div>
+
+                <div class="d-grid">
+                    <button id="submitBtn" type="submit" class="btn btn-analyze text-white">
+                        <span id="btnText">🔍 Analyze Lease Agreement</span>
+                        <span id="btnSpinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </form>
+
+            <hr class="my-4">
+
+            <!-- PS05 Compliance Footer Disclaimer -->
+            <div class="alert alert-light border disclaimer text-muted mb-0">
+                <strong>Disclaimer:</strong> This tool provides advisory findings and AI-generated summaries only. It does not approve, reject, or provide binding legal advice. Final review and approval must always be performed by a qualified human legal reviewer.
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center mt-4 text-light-50">
+            <small style="color: rgba(255,255,255,0.7);">Lease Review Assistant • PS05 Hackathon Project</small>
+        </footer>
+    </div>
+
+    <!-- Client-side Validation & Spinner Script -->
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (file) {
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (ext !== 'txt' && ext !== 'pdf') {
+                    e.preventDefault();
+                    alert('Invalid file format! Please upload a .txt or .pdf file.');
+                    return;
+                }
+            }
+
+            // Trigger loading spinner state
+            document.getElementById('btnText').innerText = 'Analyzing Lease...';
+            document.getElementById('btnSpinner').classList.remove('d-none');
+            document.getElementById('submitBtn').disabled = true;
+        });
+    </script>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
