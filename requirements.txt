@@ -2,5 +2,6 @@ fastapi
 uvicorn
 jinja2
 python-multipart
+python-dotenv
 pymupdf
 google-genai
